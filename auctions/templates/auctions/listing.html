@@ -1,0 +1,100 @@
+{% extends "auctions/layout.html" %}
+
+{% block body %}
+    <h2>Listing: {{ listing.title }}</h2>
+    
+    {% if addwatchlist != None %}
+        {% if addwatchlist == False %}
+            <a href="{% url 'addwatchlist' listing.id %}">
+               <span class="badge badge-primary">Add to Watchlist</span>
+            </a>
+        {% else %}
+            <span class="badge badge-secondary">Watchlist</span>
+        {% endif %}
+    {% else %}
+        {% if listing.status %}
+            <a href="{% url 'closelisting' listing.id %}">
+                <button type="button" class="btn btn-secondary">Close</button>
+            </a>
+        {% else %}
+            <div class="alert alert-danger" role="alert">
+                This bid is close.
+            </div>
+        {% endif %}
+    {% endif %}
+
+    <div style="width: 100%; height: 400px;">
+        <img style="width: 100%; height: 100%; object-fit: contain;" src="{{ listing.image }}" alt="listing_img">
+    </div>
+
+    <br>
+    <div>
+        <p>{{ listing.description }}</p>
+        {% if error_min_value %}
+            <div class="alert alert-danger" role="alert">
+            The bid price was below the current price.
+          </div>
+        {% endif %}
+        <p style="font-size: x-large; font-weight: 600;">${{ listing.bidprice }}</p>
+        <p style="font-size: small; ">{{ numberOfBids }} bid(s) so far. 
+            {% if listing.status == False and maxbid != None %}
+                The user {{ maxbid.bidder }} had won the bidding.</p>        
+            {% elif listing.status == False and maxbid == None %}
+                Nobody had place a bid.</p>
+            {% elif maxbid == None %}
+                No bid place yet.</p>
+            {% else %}
+                The user with the biggest bid is {{ maxbid.bidder }}</p>
+            {% endif %}
+        {% if addwatchlist != None and listing.status == True %}
+            <form action="{% url 'placebid' listing.id %}" method="post">
+                {% csrf_token %}
+                <div class="form-group">
+                    <input class="form-control" autofocus type="text" name="bid" placeholder="Bid" min=0 step="0.01" max="9999">
+                </div>
+                <input class="btn btn-primary" type="submit" value="Place Bid">
+            </form>
+            <br>
+        {% endif %}
+
+        <h4>Details</h4>
+        <ul>
+            <li>Listed by: {{ listing.user }}</li>
+            <li>Category: {{ listing.category.category }}</li>
+        </ul>
+    </div>
+
+    <div>
+        <h4>Comments</h4>
+
+        <form action="{% url 'comment' listing.id %}" method="post">
+            {% csrf_token %}
+            <div class="form-group" style="width: 60%;">
+                <textarea id="comment" name="comment" class="form-control" autofocus rows="2" placeholder="Comment"></textarea>
+            </div>
+            <input class="btn btn-primary" type="submit" value="Create comment">
+        </form>
+        
+    {% for comment in comments %}
+        <div class="d-flex mt-3 mb-3 border rounded-sm" style="height: 78px; width: 60%;">
+            <div class="p-2" style="width: 8%;">
+                <img style="width: 100%; height: 100%; object-fit: contain;" src="https://upload.wikimedia.org/wikipedia/commons/thumb/e/e0/SNice.svg/1200px-SNice.svg.png" alt="userimage">
+            </div>
+            <div class="flex-grow-1">
+                <div class="d-flex flex-column">
+                    <div class="d-flex" style="margin-top: 4px;">
+                        <div style="width: 8%;">
+                            <b style="padding-left: 8px;">{{ comment.user }}</b>
+                        </div>
+                        <div class="flex-grow-1">
+                            <p style="text-align: right; padding-right: 30px; color: lightgray;">{{ comment.datetime }}</p>
+                        </div>
+                    </div>
+                <p style="padding-left: 8px;">{{ comment.comment }}</p>    
+                </div>
+            </div>
+        </div>
+    {% endfor %}
+    </div>
+
+{% endblock %}

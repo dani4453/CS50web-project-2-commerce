@@ -1,0 +1,36 @@
+{% extends "auctions/layout.html" %}
+
+{% block body %}
+    <h2>{{ message }}</h2>
+    {% if pop_up %}
+        <div class="alert alert-success" role="alert">
+            The listing with the title {{ pop_up }} has been created.
+        </div>
+    {% endif %}
+
+    <form action="{% url 'listing' %}" method="post">
+        {% csrf_token %}
+            <div class="form-group">
+                <input class="form-control" autofocus type="text" name="title" placeholder="Title">
+            </div>
+            <div class="form-group">
+                <textarea class="form-control" autofocus rows="3" id="description" name="description" placeholder="Description"></textarea>
+            </div>
+            <div class="form-group">
+                <input class="form-control" autofocus type="text" name="bidprice" placeholder="Bid Price" min=0 step="0.01" max="9999">
+            </div>
+            <div class="form-group">
+                <input class="form-control" autofocus type="text" name="img" placeholder="Image URL">
+            </div>
+            <div class="form-group">
+                <select name="category">
+                    {% for category in categories %}
+                        <option value="{{ category.id }}">{{ category.category }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <input class="btn btn-primary" type="submit" value="Create">
+    </form>
+
+
+{% endblock %}

@@ -1,0 +1,18 @@
+{% extends "auctions/layout.html" %}
+
+{% block body %}
+    <h2>{{ message }}</h2>
+    {% if pop_up %}
+        <div class="alert alert-success" role="alert">
+            The category {{ pop_up }} has been created.
+        </div>
+    {% endif %}
+
+    <form action="{% url 'newcategory' %}" method="post">
+        {% csrf_token %}
+            <div class="form-group">
+                <input class="form-control" autofocus type="text" name="category" placeholder="Category">
+            </div>
+            <input class="btn btn-primary" type="submit" value="Create">
+    </form>
+{% endblock %}
