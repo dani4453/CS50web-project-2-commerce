@@ -8,7 +8,7 @@
         </div>
     {% endif %}
 
-    <form action="{% url 'listing' %}" method="post">
+    <form action="{% url 'newlisting' %}" method="post">
         {% csrf_token %}
             <div class="form-group">
                 <input class="form-control" autofocus type="text" name="title" placeholder="Title">
